@@ -22,9 +22,15 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+
+    //######################################################
+    String APIKey = "Api key goes here!";
+    //######################################################
+
+
     List<Movie> movies;
     private final String BASE_URL = "http://api.themoviedb.org/3";
-    String APIKey = "";
+
     MoviesAPI api = new MoviesAPI(APIKey, BASE_URL);
     GridView posterGrid;
     PosterAdapter adapter;
