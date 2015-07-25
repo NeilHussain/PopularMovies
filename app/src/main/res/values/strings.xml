@@ -4,4 +4,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_movie_detail">Movie Details</string>
+
+    <string name="pref_sort_key" translatable="false">sortsetting</string>
+    <string name="pref_sort_default">popularity.desc</string>
+    <string name="title_activity_settings">SettingsActivity</string>
 </resources>

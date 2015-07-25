@@ -28,10 +28,11 @@ public class MovieDetailActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(getSupportActionBar()!=null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         getIntents();
-
         makeComponents();
     }
 
