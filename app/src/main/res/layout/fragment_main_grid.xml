@@ -4,11 +4,11 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <FrameLayout
+    <GridView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/main_fragment_container">
-    </FrameLayout>
-
+        android:id="@+id/moviesGridView"
+        android:numColumns="2"
+        />
 
 </LinearLayout>

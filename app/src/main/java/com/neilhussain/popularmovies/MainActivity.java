@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     //######################################################
-    String APIKey = "";
+    String APIKey = "ace498aa4c71763241446ba13fb4933e";
     //######################################################
 
     String lastSort;
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     GridView posterGrid;
     PosterAdapter adapter;
 
-    String[] sortTypes = {"Most popular","Highest rated"};
+    String[] sortTypes = {"Most popular", "Highest rated"};
 
     boolean refresh = false;
 
@@ -49,13 +49,31 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        posterGrid = (GridView)findViewById(R.id.moviesGridView);
+        if (savedInstanceState != null) {
 
-        if(savedInstanceState != null){
             movies = savedInstanceState.getParcelableArrayList("movies");
-            fillInGrid();
-        }else{
-            getMovies("popularity.desc");
+            //fillInGrid();
+
+            if (findViewById(R.id.main_fragment_container) == null) {
+                createMainFragment(movies);
+            }
+
+
+        } else {
+
+            if (findViewById(R.id.main_fragment_container) == null) {
+
+                // However, if we're being restored from a previous state,
+                // then we don't need to do anything and should return or else
+                // we could end up with overlapping fragments.
+                if (savedInstanceState != null) {
+                    return;
+                }else{
+                    getMovies("popularity.desc");
+
+                }
+            }
+
         }
 
         //getPopularMovies();
@@ -71,6 +89,30 @@ public class MainActivity extends AppCompatActivity {
             getMovies(lastSort);
         }
     }
+
+    public void createMainFragment(ArrayList<Movie> movies) {
+
+
+        //clear the backstack when switching sort types
+        if(getSupportFragmentManager().getBackStackEntryCount() > 0){
+
+            getSupportFragmentManager().popBackStack();
+
+        }
+
+        // Create a new Fragment to be placed in the activity layout
+        MainGridFragment mainGrid = new MainGridFragment();
+
+     //Pass the movies list in to the fragment so it has something to display.
+        Bundle args = new Bundle();
+        args.putParcelableArrayList("movies", (ArrayList<Movie>)movies);
+
+        mainGrid.setArguments(args);
+
+        // Add the fragment to the 'main_fragment_container' FrameLayout
+        getSupportFragmentManager().beginTransaction().add(R.id.main_fragment_container, mainGrid).addToBackStack(null).commit();
+    }
+
 
     //Returns the correct settings preference.
     private String getSortPref() {
@@ -101,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void refreshGrid(){
+    public void refreshGrid() {
 
         System.out.println("Refresh grid");
         adapter.notifyDataSetChanged();
@@ -110,13 +152,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void getMovies(String sort){
+    public void getMovies(String sort) {
 
         api.getMovie(sort, new MoviesCallback() {
             @Override
             public void ready(List<Movie> moviesList) {
                 movies = new ArrayList<>(moviesList);
-                fillInGrid();
+                createMainFragment(movies);
             }
         });
 
@@ -132,6 +174,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -144,32 +187,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
 
-            //Not used at the recommendation of the Udacity coach
-            /*
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Sort Movies");
-            builder.setItems(sortTypes, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int item) {
-                    // Do something with the selection
-
-                    switch (item) {
-
-                        case 0:
-                            getMovies("popularity.desc");
-                            break;
-                        case 1:
-                            getMovies("vote_average.desc");
-                            break;
-                    }
-
-
-                }
-            });
-            AlertDialog alert = builder.create();
-            alert.show();
-            */
-
-
             return true;
         }
 
@@ -180,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
 
-        savedInstanceState.putParcelableArrayList("movies", movies);
+        savedInstanceState.putParcelableArrayList("movies", (ArrayList<Movie>)movies);
 
         // Call to the superclass to save the full state of the activity
         super.onSaveInstanceState(savedInstanceState);
