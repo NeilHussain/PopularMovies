@@ -4,6 +4,8 @@ package com.neilhussain.popularmovies;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,32 +35,36 @@ public class MainGridFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        v = inflater.inflate(R.layout.fragment_main_grid, container, false);
 
-        //Do stuff with the fragment!
+        if(v == null) {
 
-        makeComponents();
-        getIntents();
+            v = inflater.inflate(R.layout.fragment_main_grid, container, false);
 
-        fillInGrid();
+            //Do stuff with the fragment!
 
-        return v;
+            makeComponents();
+            getIntents();
+            fillInGrid();
+
+            return v;
+
+        }else{
+
+            System.out.println("Movie grid fragment isn't null, just returning the saved view.");
+            return v;
+
+        }
     }
 
     private void makeComponents() {
-
         posterGrid = (GridView) v.findViewById(R.id.moviesGridView);
     }
 
     private void getIntents() {
-
-
         Bundle bundle = getArguments();
 
         //add first item to the list, the item that trade was clicked on
         movies = (ArrayList<Movie>) bundle.get("movies");
-
-
     }
 
     private void fillInGrid() {
@@ -71,15 +77,22 @@ public class MainGridFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, final View view,
                                     int position, long id) {
 
-                Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
-
-                intent.putExtra("movie", movies.get(position));
-
-                startActivity(intent);
+                openFragment(new MovieDetailFragment());
 
             }
         });
 
+
+    }
+
+    private void openFragment(final Fragment fragment)   {
+
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
+        transaction.replace(R.id.main_fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
 
     }
 

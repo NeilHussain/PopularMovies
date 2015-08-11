@@ -7,9 +7,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,37 +47,64 @@ public class MainActivity extends AppCompatActivity {
 
     boolean refresh = false;
 
+    Fragment mContent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
+        if(savedInstanceState != null){
+            mContent = getSupportFragmentManager().getFragment(savedInstanceState, "mContent");
+        }
+
+
+        if (mContent == null) {
+
+            //Just let it do its thing.
+            Log.d("onCreate", "Getting movies again.");
+            getMovies("popularity.desc");
+
+        }else{
+
+
+
+        }
+
+        /*
         if (savedInstanceState != null) {
 
             movies = savedInstanceState.getParcelableArrayList("movies");
+
             //fillInGrid();
-
-            if (findViewById(R.id.main_fragment_container) == null) {
-                createMainFragment(movies);
-            }
-
+            // mContent = getSupportFragmentManager().getFragment(savedInstanceState, "mContent");
+            //createMainFragment(movies);
 
         } else {
 
+
+            getMovies("popularity.desc");
+            /*
             if (findViewById(R.id.main_fragment_container) == null) {
 
                 // However, if we're being restored from a previous state,
                 // then we don't need to do anything and should return or else
                 // we could end up with overlapping fragments.
                 if (savedInstanceState != null) {
-                    return;
-                }else{
+
+                   // return;
+
+                } else {
+
                     getMovies("popularity.desc");
 
                 }
-            }
 
-        }
+            }*/
+
+        //}
 
         //getPopularMovies();
 
@@ -84,33 +114,36 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         //refresh list if sort pref changed
         String currentSortPref = getSortPref();
-        if (!currentSortPref.equals(lastSort) || movies == null) {
+
+        if (!currentSortPref.equals(lastSort)) {
             lastSort = currentSortPref;
-            getMovies(lastSort);
         }
     }
 
     public void createMainFragment(ArrayList<Movie> movies) {
 
-
         //clear the backstack when switching sort types
-        if(getSupportFragmentManager().getBackStackEntryCount() > 0){
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
 
             getSupportFragmentManager().popBackStack();
 
         }
 
-        // Create a new Fragment to be placed in the activity layout
-        MainGridFragment mainGrid = new MainGridFragment();
+        if (mContent == null) {
 
-     //Pass the movies list in to the fragment so it has something to display.
-        Bundle args = new Bundle();
-        args.putParcelableArrayList("movies", (ArrayList<Movie>)movies);
+            mContent = new MainGridFragment();
 
-        mainGrid.setArguments(args);
+            //Pass the movies list in to the fragment so it has something to display.
+            Bundle args = new Bundle();
+            args.putParcelableArrayList("movies", (ArrayList<Movie>) movies);
 
-        // Add the fragment to the 'main_fragment_container' FrameLayout
-        getSupportFragmentManager().beginTransaction().add(R.id.main_fragment_container, mainGrid).addToBackStack(null).commit();
+            mContent.setArguments(args);
+        }
+
+            // Add the fragment to the 'main_fragment_container' FrameLayout
+            getSupportFragmentManager().beginTransaction().add(R.id.main_fragment_container, mContent).addToBackStack(null).commit();
+
+
     }
 
 
@@ -121,27 +154,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void fillInGrid() {
-        adapter = new PosterAdapter(getBaseContext(), R.layout.movie_grid_item, movies);
-        posterGrid.setAdapter(adapter);
-
-        posterGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, final View view,
-                                    int position, long id) {
-
-                Intent intent = new Intent(MainActivity.this, MovieDetailActivity.class);
-
-                intent.putExtra("movie", movies.get(position));
-
-                startActivity(intent);
-
-            }
-        });
-
-
-    }
 
     public void refreshGrid() {
 
@@ -195,12 +207,23 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-
-        savedInstanceState.putParcelableArrayList("movies", (ArrayList<Movie>)movies);
+    public void onSaveInstanceState(Bundle outState) {
 
         // Call to the superclass to save the full state of the activity
-        super.onSaveInstanceState(savedInstanceState);
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("movies", movies);
+        getSupportFragmentManager().putFragment(outState, "mContent", mContent);
+
+
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle inState) {
+
+        // Call to the superclass to restore the full state of the activity
+        super.onRestoreInstanceState(inState);
+        movies = inState.getParcelableArrayList("movies");
+
     }
 
 }
