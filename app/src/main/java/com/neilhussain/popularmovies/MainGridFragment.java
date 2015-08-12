@@ -77,7 +77,7 @@ public class MainGridFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, final View view,
                                     int position, long id) {
 
-                openFragment(new MovieDetailFragment());
+                openFragment(new MovieDetailFragment(), movies.get(position));
 
             }
         });
@@ -85,9 +85,14 @@ public class MainGridFragment extends Fragment {
 
     }
 
-    private void openFragment(final Fragment fragment)   {
+    private void openFragment(final Fragment fragment, Movie movie)   {
 
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+
+        Bundle args = new Bundle();
+        args.putParcelable("movie", movie);
+        fragment.setArguments(args);
+
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
         transaction.replace(R.id.main_fragment_container, fragment);

@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     //######################################################
-    String APIKey = "ace498aa4c71763241446ba13fb4933e";
+    String APIKey;
     //######################################################
 
     String lastSort;
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Movie> movies;
     private final String BASE_URL = "http://api.themoviedb.org/3";
 
-    MoviesAPI api = new MoviesAPI(APIKey, BASE_URL);
+    MoviesAPI api;
     GridView posterGrid;
     PosterAdapter adapter;
 
@@ -56,6 +56,12 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
+        //Create the api after getting the key from resources.
+        APIKey = getResources().getString(R.string.API_KEY);
+        api = new MoviesAPI(APIKey, BASE_URL);
+
+        Log.d("API Key", APIKey);
+
         if(savedInstanceState != null){
             mContent = getSupportFragmentManager().getFragment(savedInstanceState, "mContent");
         }
@@ -63,50 +69,15 @@ public class MainActivity extends AppCompatActivity {
 
         if (mContent == null) {
 
-            //Just let it do its thing.
             Log.d("onCreate", "Getting movies again.");
             getMovies("popularity.desc");
 
         }else{
 
+            //Just let it do its thing.
 
 
         }
-
-        /*
-        if (savedInstanceState != null) {
-
-            movies = savedInstanceState.getParcelableArrayList("movies");
-
-            //fillInGrid();
-            // mContent = getSupportFragmentManager().getFragment(savedInstanceState, "mContent");
-            //createMainFragment(movies);
-
-        } else {
-
-
-            getMovies("popularity.desc");
-            /*
-            if (findViewById(R.id.main_fragment_container) == null) {
-
-                // However, if we're being restored from a previous state,
-                // then we don't need to do anything and should return or else
-                // we could end up with overlapping fragments.
-                if (savedInstanceState != null) {
-
-                   // return;
-
-                } else {
-
-                    getMovies("popularity.desc");
-
-                }
-
-            }*/
-
-        //}
-
-        //getPopularMovies();
 
     }
 
@@ -166,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void getMovies(String sort) {
 
-        api.getMovie(sort, new MoviesCallback() {
+        api.getMovies(sort, new MoviesCallback() {
             @Override
             public void ready(List<Movie> moviesList) {
                 movies = new ArrayList<>(moviesList);

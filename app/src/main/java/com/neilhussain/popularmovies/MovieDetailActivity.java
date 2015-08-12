@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-
+//Not used anymore, moved to a fragment.
 public class MovieDetailActivity extends ActionBarActivity {
 
     Movie movie;

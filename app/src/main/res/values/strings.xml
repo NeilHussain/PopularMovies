@@ -11,4 +11,17 @@
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+
+
+    //#################################################//
+    //                                                 //
+    //       API KEY GOES      ||                      //
+    //                         ||                      //
+    //                         \/                      //
+    //#################################################//
+
+
+    <string name="API_KEY">ace498aa4c71763241446ba13fb4933e</string>
 </resources>

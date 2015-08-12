@@ -41,7 +41,6 @@ public class MoviesAPI {
 
     }
 
-
     public List<Movie> getPopularMovies() {
 
         List<Movie> movies;
@@ -69,13 +68,10 @@ public class MoviesAPI {
             return null;
         }
 
-
         return movies;
-
-
     }
 
-    public void getMovie(String sort, final MoviesCallback mcb) {
+    public void getMovies(String sort, final MoviesCallback mcb) {
 
         api.getMoviesCallback(sort, apiKey, new Callback<Page>() {
 
@@ -93,6 +89,46 @@ public class MoviesAPI {
         });
 
 
+    }
+
+    //movie/{id}/videos endpoint.
+    //To fetch reviews you will want to make a request to the /movie/{id}/reviews
+
+    public void getMovieTrailers(int id, final TrailersCallback slc) {
+
+        api.getMovieTrailers(id, apiKey, new Callback<TrailerContainer>() {
+
+            @Override
+            public void success(TrailerContainer trailers, Response response) {
+                //code which should update user field
+                slc.ready(trailers);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+
+        });
+    }
 
 
-}}
+    public void getMovieReviews(int id, final StringListCallback slc) {
+
+        api.getMovieReviews(id, apiKey, new Callback<List<String>>() {
+
+            @Override
+            public void success(List<String> trailers, Response response) {
+                //code which should update user field
+                slc.ready(trailers);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+
+        });
+    }
+
+}
